@@ -1274,6 +1274,21 @@ MtrrLibLowestType (
 }
 
 /**
+  Return TRUE when the Operand is exactly power of 2.
+
+  @retval TRUE  Operand is exactly power of 2.
+  @retval FALSE Operand is not power of 2.
+**/
+BOOLEAN
+MtrrLibIsPowerOfTwo (
+  IN     UINT64  Operand
+  )
+{
+  ASSERT (Operand != 0);
+  return (BOOLEAN)((Operand & (Operand - 1)) == 0);
+}
+
+/**
   Calculate the subtractive path from vertex Start to Stop.
 
   @param DefaultType  Default memory type.
@@ -1643,7 +1658,7 @@ MtrrLibCalculateMtrrs (
           break;
         }
 
-        if ((Weight[M (Start, Stop)] == MAX_WEIGHT) && IS_POW2 (Length)) {
+        if ((Weight[M (Start, Stop)] == MAX_WEIGHT) && MtrrLibIsPowerOfTwo (Length)) {
           if (MtrrLibGetNumberOfTypes (
                 Ranges,
                 RangeCount,
