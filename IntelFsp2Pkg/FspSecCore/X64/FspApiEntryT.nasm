@@ -141,22 +141,6 @@ ASM_PFX(LoadMicrocodeDefault):
    jz     ParamError
    mov    rsp, rcx
 
-   ;
-   ; If microcode already loaded before this function, exit this function with SUCCESS.
-   ;
-   mov   ecx, MSR_IA32_BIOS_SIGN_ID
-   xor   eax, eax               ; Clear EAX
-   xor   edx, edx               ; Clear EDX
-   wrmsr                        ; Load 0 to MSR at 8Bh
-
-   mov   eax, 1
-   cpuid
-   mov   ecx, MSR_IA32_BIOS_SIGN_ID
-   rdmsr                         ; Get current microcode signature
-   xor   rax, rax
-   test  edx, edx
-   jnz   Exit2
-
    ; skip loading Microcode if the MicrocodeCodeSize is zero
    ; and report error if size is less than 2k
    ; first check UPD header revision
@@ -214,7 +198,7 @@ CheckMainHeader:
    cmp   ebx, dword [esi + MicrocodeHdr.MicrocodeHdrProcessor]
    jne   LoadMicrocodeDefault1
    test  edx, dword [esi + MicrocodeHdr.MicrocodeHdrFlags ]
-   jnz   LoadMicrocode  ; Jif signature and platform ID match
+   jnz   LoadCheck  ; Jif signature and platform ID match
 
 LoadMicrocodeDefault1:
    ; Check if extended header exists
@@ -247,7 +231,7 @@ CheckExtSig:
    cmp   dword [edi + ExtSig.ExtSigProcessor], ebx
    jne   LoadMicrocodeDefault2
    test  dword [edi + ExtSig.ExtSigFlags], edx
-   jnz   LoadMicrocode      ; Jif signature and platform ID match
+   jnz   LoadCheck      ; Jif signature and platform ID match
 LoadMicrocodeDefault2:
    ; Check if any more extended signatures exist
    add   edi, ExtSig.size
@@ -292,7 +276,22 @@ LoadMicrocodeDefault4:
    ; Is valid Microcode start point ?
    cmp   dword [esi + MicrocodeHdr.MicrocodeHdrVersion], 0ffffffffh
    jz    Done
-   jmp   CheckMainHeader
+
+LoadCheck:
+   ; Get the revision of the current microcode update loaded
+   mov   ecx, MSR_IA32_BIOS_SIGN_ID
+   xor   eax, eax               ; Clear EAX
+   xor   edx, edx               ; Clear EDX
+   wrmsr                        ; Load 0 to MSR at 8Bh
+
+   mov   eax, 1
+   cpuid
+   mov   ecx, MSR_IA32_BIOS_SIGN_ID
+   rdmsr                        ; Get current microcode signature
+
+   ; Verify this microcode update is not already loaded
+   cmp   dword [esi + MicrocodeHdr.MicrocodeHdrRevision], edx
+   je    Continue
 
 LoadMicrocode:
    ; EAX contains the linear address of the start of the Update Data
@@ -307,12 +306,10 @@ LoadMicrocode:
    mov   eax, 1
    cpuid
 
-Done:
-   mov   ecx, MSR_IA32_BIOS_SIGN_ID
-   xor   eax, eax               ; Clear EAX
-   xor   edx, edx               ; Clear EDX
-   wrmsr                        ; Load 0 to MSR at 8Bh
+Continue:
+   jmp   NextMicrocode
 
+Done:
    mov   eax, 1
    cpuid
    mov   ecx, MSR_IA32_BIOS_SIGN_ID
