@@ -625,8 +625,7 @@ typedef struct {
   UINT32    FileOffset;  ///< The file pointer to the debug data.
 } EFI_IMAGE_DEBUG_DIRECTORY_ENTRY;
 
-#define EFI_IMAGE_DEBUG_TYPE_CODEVIEW               2    ///< The Visual C++ debug information.
-#define EFI_IMAGE_DEBUG_TYPE_EX_DLLCHARACTERISTICS  20
+#define EFI_IMAGE_DEBUG_TYPE_CODEVIEW  2    ///< The Visual C++ debug information.
 
 ///
 /// Debug Data Structure defined in Microsoft C++.
@@ -669,16 +668,6 @@ typedef struct {
   //  Filename of .DLL (Mach-O with debug info) goes here
   //
 } EFI_IMAGE_DEBUG_CODEVIEW_MTOC_ENTRY;
-
-///
-/// Extended DLL Characteristics
-///
-#define EFI_IMAGE_DLLCHARACTERISTICS_EX_CET_COMPAT          0x0001
-#define EFI_IMAGE_DLLCHARACTERISTICS_EX_FORWARD_CFI_COMPAT  0x0040
-
-typedef struct {
-  UINT32    DllCharacteristicsEx;
-} EFI_IMAGE_DEBUG_EX_DLLCHARACTERISTICS_ENTRY;
 
 ///
 /// Resource format.
