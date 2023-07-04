@@ -468,7 +468,16 @@ MtrrGetFixedMtrr (
   OUT MTRR_FIXED_SETTINGS  *FixedSettings
   )
 {
-  if (!IsMtrrSupported ()) {
+  BOOLEAN                          FixedMtrrSupported;
+  MSR_IA32_MTRR_DEF_TYPE_REGISTER  *MtrrDefType;
+
+  //
+  // Get MTRR_DEF_TYPE value
+  //
+  MtrrDefType->Uint64 = AsmReadMsr64 (MSR_IA32_MTRR_DEF_TYPE);
+  MtrrLibIsMtrrSupported (&FixedMtrrSupported, NULL);
+
+  if (!FixedMtrrSupported || MtrrDefType->Bits.FE != 1) {
     return FixedSettings;
   }
 
