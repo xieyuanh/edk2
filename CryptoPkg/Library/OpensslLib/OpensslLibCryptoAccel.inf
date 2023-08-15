@@ -1,24 +1,19 @@
 ## @file
-#  This module provides OpenSSL Library implementation with ECC and TLS
-#  features along with performance optimized implementations of SHA1,
-#  SHA256, SHA512 AESNI, VPAED, and GHASH for IA32 and X64.
+#  This module provides OpenSSL Library implementation without TLS features
+#  along with performance optimized implementations of SHA1, SHA256, SHA512,
+#  AESNI, VPAED, and GHASH for IA32 and X64.
 #
-#  This library should be used if a module module needs ECC in TLS, or
-#  asymmetric cryptography services such as X509 certificate or PEM format
-#  data processing.  This library increases the size overhead up to ~115 KB
-#  compared to OpensslLibAccel.inf library instance.
-#
-#  Copyright (c) 2010 - 2020, Intel Corporation. All rights reserved.<BR>
-#  (C) Copyright 2020 Hewlett Packard Enterprise Development LP<BR>
+#  Copyright (c) 2023, Intel Corporation. All rights reserved.<BR>
+#  (C) Copyright 2023 Hewlett Packard Enterprise Development LP<BR>
 #  SPDX-License-Identifier: BSD-2-Clause-Patent
 #
 ##
 
 [Defines]
   INF_VERSION                    = 0x00010005
-  BASE_NAME                      = OpensslLibFullAccel
-  MODULE_UNI_FILE                = OpensslLibFullAccel.uni
-  FILE_GUID                      = AC649FB2-ADCF-450A-9C61-ED3CAFF12864
+  BASE_NAME                      = OpensslLibCryptoAccel
+  MODULE_UNI_FILE                = OpensslLibCryptoAccel.uni
+  FILE_GUID                      = BE1C2ADF-1A7A-4552-8B59-0F95ED501ED4
   MODULE_TYPE                    = BASE
   VERSION_STRING                 = 1.0
   LIBRARY_CLASS                  = OpensslLib
@@ -26,7 +21,7 @@
 
   DEFINE OPENSSL_PATH            = openssl
   DEFINE OPENSSL_GEN_PATH        = OpensslGen
-  DEFINE OPENSSL_FLAGS           = -DL_ENDIAN -DOPENSSL_SMALL_FOOTPRINT -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE
+  DEFINE OPENSSL_FLAGS           = -DL_ENDIAN -DOPENSSL_SMALL_FOOTPRINT -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -DEDK2_OPENSSL_NOEC=1 -DOPENSSL_NO_DH -DOPENSSL_NO_AUTOALGINIT
   DEFINE OPENSSL_FLAGS_IA32      = -DAES_ASM -DGHASH_ASM -DMD5_ASM -DOPENSSL_CPUID_OBJ -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DVPAES_ASM
   DEFINE OPENSSL_FLAGS_X64       = -DAES_ASM -DBSAES_ASM -DGHASH_ASM -DKECCAK1600_ASM -DMD5_ASM -DOPENSSL_CPUID_OBJ -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DVPAES_ASM
 
@@ -45,15 +40,14 @@
   buildinf.c
   OpensslStub/ossl_store.c
   OpensslStub/rand_pool.c
-#  OpensslStub/SslNull.c
-#  OpensslStub/EcSm2Null.c
-  OpensslStub/uefiprov.c
+  OpensslStub/SslNull.c
+  OpensslStub/EcSm2Null.c
+  OpensslStub/uefiprovcrypto.c
   OpensslStub/EncoderNull.c
   OpensslStub/DecoderNull.c
-  OpensslStub/SslStatServNull.c
-  OpensslStub/SslExtServNull.c
   OpensslStub/Pkcs12Null.c
-  OpensslStub/EcxNull.c
+  OpensslStub/DhNull.c
+  OpensslStub/PemNull.c
   OpensslStub/crypto/objects/obj_dat.c
   OpensslStub/crypto/evp/pmeth_lib.c
   OpensslStub/crypto/x509/x_pubkey.c
@@ -206,20 +200,6 @@
   $(OPENSSL_PATH)/crypto/conf/conf_mod.c
   $(OPENSSL_PATH)/crypto/conf/conf_sap.c
   $(OPENSSL_PATH)/crypto/conf/conf_ssl.c
-  $(OPENSSL_PATH)/crypto/dh/dh_ameth.c
-  $(OPENSSL_PATH)/crypto/dh/dh_asn1.c
-  $(OPENSSL_PATH)/crypto/dh/dh_backend.c
-  $(OPENSSL_PATH)/crypto/dh/dh_check.c
-  $(OPENSSL_PATH)/crypto/dh/dh_err.c
-  $(OPENSSL_PATH)/crypto/dh/dh_gen.c
-  $(OPENSSL_PATH)/crypto/dh/dh_group_params.c
-  $(OPENSSL_PATH)/crypto/dh/dh_kdf.c
-  $(OPENSSL_PATH)/crypto/dh/dh_key.c
-  $(OPENSSL_PATH)/crypto/dh/dh_lib.c
-  $(OPENSSL_PATH)/crypto/dh/dh_meth.c
-  $(OPENSSL_PATH)/crypto/dh/dh_pmeth.c
-  $(OPENSSL_PATH)/crypto/dh/dh_prn.c
-  $(OPENSSL_PATH)/crypto/dh/dh_rfc5114.c
   $(OPENSSL_PATH)/crypto/dso/dso_dl.c
   $(OPENSSL_PATH)/crypto/dso/dso_dlfcn.c
   $(OPENSSL_PATH)/crypto/dso/dso_err.c
@@ -227,43 +207,6 @@
   $(OPENSSL_PATH)/crypto/dso/dso_openssl.c
   $(OPENSSL_PATH)/crypto/dso/dso_vms.c
   $(OPENSSL_PATH)/crypto/dso/dso_win32.c
-  $(OPENSSL_PATH)/crypto/ec/curve448/arch_32/f_impl32.c
-  $(OPENSSL_PATH)/crypto/ec/curve448/arch_64/f_impl64.c
-  $(OPENSSL_PATH)/crypto/ec/curve448/curve448.c
-  $(OPENSSL_PATH)/crypto/ec/curve448/curve448_tables.c
-  $(OPENSSL_PATH)/crypto/ec/curve448/eddsa.c
-  $(OPENSSL_PATH)/crypto/ec/curve448/f_generic.c
-  $(OPENSSL_PATH)/crypto/ec/curve448/scalar.c
-  $(OPENSSL_PATH)/crypto/ec/curve25519.c
-  $(OPENSSL_PATH)/crypto/ec/ec2_oct.c
-  $(OPENSSL_PATH)/crypto/ec/ec2_smpl.c
-  $(OPENSSL_PATH)/crypto/ec/ec_ameth.c
-  $(OPENSSL_PATH)/crypto/ec/ec_asn1.c
-  $(OPENSSL_PATH)/crypto/ec/ec_backend.c
-  $(OPENSSL_PATH)/crypto/ec/ec_check.c
-  $(OPENSSL_PATH)/crypto/ec/ec_curve.c
-  $(OPENSSL_PATH)/crypto/ec/ec_cvt.c
-  $(OPENSSL_PATH)/crypto/ec/ec_deprecated.c
-  $(OPENSSL_PATH)/crypto/ec/ec_err.c
-  $(OPENSSL_PATH)/crypto/ec/ec_key.c
-  $(OPENSSL_PATH)/crypto/ec/ec_kmeth.c
-  $(OPENSSL_PATH)/crypto/ec/ec_lib.c
-  $(OPENSSL_PATH)/crypto/ec/ec_mult.c
-  $(OPENSSL_PATH)/crypto/ec/ec_oct.c
-  $(OPENSSL_PATH)/crypto/ec/ec_pmeth.c
-  $(OPENSSL_PATH)/crypto/ec/ec_print.c
-  $(OPENSSL_PATH)/crypto/ec/ecdh_kdf.c
-  $(OPENSSL_PATH)/crypto/ec/ecdh_ossl.c
-  $(OPENSSL_PATH)/crypto/ec/ecdsa_ossl.c
-  $(OPENSSL_PATH)/crypto/ec/ecdsa_sign.c
-  $(OPENSSL_PATH)/crypto/ec/ecdsa_vrf.c
-  $(OPENSSL_PATH)/crypto/ec/eck_prn.c
-  $(OPENSSL_PATH)/crypto/ec/ecp_mont.c
-  $(OPENSSL_PATH)/crypto/ec/ecp_nist.c
-  $(OPENSSL_PATH)/crypto/ec/ecp_oct.c
-  $(OPENSSL_PATH)/crypto/ec/ecp_smpl.c
-  $(OPENSSL_PATH)/crypto/ec/ecx_backend.c
-  $(OPENSSL_PATH)/crypto/ec/ecx_key.c
   $(OPENSSL_PATH)/crypto/err/err.c
   $(OPENSSL_PATH)/crypto/err/err_all.c
   $(OPENSSL_PATH)/crypto/err/err_all_legacy.c
@@ -283,7 +226,7 @@
   $(OPENSSL_PATH)/crypto/evp/ctrl_params_translate.c
   $(OPENSSL_PATH)/crypto/evp/dh_ctrl.c
   $(OPENSSL_PATH)/crypto/evp/dh_support.c
-  $(OPENSSL_PATH)/crypto/evp/digest.c
+  OpensslStub/crypto/evp/digest.c
   $(OPENSSL_PATH)/crypto/evp/dsa_ctrl.c
   $(OPENSSL_PATH)/crypto/evp/e_aes.c
   $(OPENSSL_PATH)/crypto/evp/e_aes_cbc_hmac_sha1.c
@@ -420,17 +363,6 @@
   $(OPENSSL_PATH)/crypto/objects/obj_err.c
   $(OPENSSL_PATH)/crypto/objects/obj_lib.c
   $(OPENSSL_PATH)/crypto/objects/obj_xref.c
-  $(OPENSSL_PATH)/crypto/pem/pem_all.c
-  $(OPENSSL_PATH)/crypto/pem/pem_err.c
-  $(OPENSSL_PATH)/crypto/pem/pem_info.c
-  $(OPENSSL_PATH)/crypto/pem/pem_lib.c
-  $(OPENSSL_PATH)/crypto/pem/pem_oth.c
-  $(OPENSSL_PATH)/crypto/pem/pem_pk8.c
-  $(OPENSSL_PATH)/crypto/pem/pem_pkey.c
-  $(OPENSSL_PATH)/crypto/pem/pem_sign.c
-  $(OPENSSL_PATH)/crypto/pem/pem_x509.c
-  $(OPENSSL_PATH)/crypto/pem/pem_xaux.c
-  $(OPENSSL_PATH)/crypto/pem/pvkfmt.c
   $(OPENSSL_PATH)/crypto/pkcs7/bio_pk7.c
   $(OPENSSL_PATH)/crypto/pkcs7/pk7_asn1.c
   $(OPENSSL_PATH)/crypto/pkcs7/pk7_attr.c
@@ -598,9 +530,6 @@
   $(OPENSSL_PATH)/providers/implementations/digests/sha2_prov.c
   $(OPENSSL_PATH)/providers/implementations/digests/sha3_prov.c
   $(OPENSSL_PATH)/providers/implementations/digests/sm3_prov.c
-  $(OPENSSL_PATH)/providers/implementations/exchange/dh_exch.c
-  $(OPENSSL_PATH)/providers/implementations/exchange/ecdh_exch.c
-  $(OPENSSL_PATH)/providers/implementations/exchange/ecx_exch.c
   $(OPENSSL_PATH)/providers/implementations/exchange/kdf_exch.c
   $(OPENSSL_PATH)/providers/implementations/kdfs/hkdf.c
   $(OPENSSL_PATH)/providers/implementations/kdfs/kbkdf.c
@@ -614,9 +543,6 @@
   $(OPENSSL_PATH)/providers/implementations/kdfs/tls1_prf.c
   $(OPENSSL_PATH)/providers/implementations/kdfs/x942kdf.c
   $(OPENSSL_PATH)/providers/implementations/kem/rsa_kem.c
-  $(OPENSSL_PATH)/providers/implementations/keymgmt/dh_kmgmt.c
-  $(OPENSSL_PATH)/providers/implementations/keymgmt/ec_kmgmt.c
-  $(OPENSSL_PATH)/providers/implementations/keymgmt/ecx_kmgmt.c
   $(OPENSSL_PATH)/providers/implementations/keymgmt/kdf_legacy_kmgmt.c
   $(OPENSSL_PATH)/providers/implementations/keymgmt/mac_legacy_kmgmt.c
   $(OPENSSL_PATH)/providers/implementations/keymgmt/rsa_kmgmt.c
@@ -634,14 +560,9 @@
   $(OPENSSL_PATH)/providers/implementations/rands/seeding/rand_tsc.c
   $(OPENSSL_PATH)/providers/implementations/rands/seeding/rand_unix.c
   $(OPENSSL_PATH)/providers/implementations/rands/seeding/rand_win.c
-  $(OPENSSL_PATH)/providers/implementations/signature/ecdsa_sig.c
-  $(OPENSSL_PATH)/providers/implementations/signature/eddsa_sig.c
   $(OPENSSL_PATH)/providers/implementations/signature/mac_legacy_sig.c
   $(OPENSSL_PATH)/providers/implementations/signature/rsa_sig.c
   $(OPENSSL_PATH)/ssl/s3_cbc.c
-  $(OPENSSL_PATH)/providers/common/der/der_ec_key.c
-  $(OPENSSL_PATH)/providers/common/der/der_ec_sig.c
-  $(OPENSSL_PATH)/providers/common/der/der_ecx_key.c
   $(OPENSSL_PATH)/providers/common/der/der_rsa_key.c
   $(OPENSSL_PATH)/providers/common/provider_ctx.c
   $(OPENSSL_PATH)/providers/common/provider_err.c
@@ -655,53 +576,8 @@
   $(OPENSSL_PATH)/providers/implementations/digests/digestcommon.c
   $(OPENSSL_PATH)/ssl/record/tls_pad.c
   $(OPENSSL_GEN_PATH)/providers/common/der/der_digests_gen.c
-  $(OPENSSL_GEN_PATH)/providers/common/der/der_ec_gen.c
-  $(OPENSSL_GEN_PATH)/providers/common/der/der_ecx_gen.c
   $(OPENSSL_GEN_PATH)/providers/common/der/der_rsa_gen.c
   $(OPENSSL_GEN_PATH)/providers/common/der/der_wrap_gen.c
-  $(OPENSSL_PATH)/ssl/bio_ssl.c
-  $(OPENSSL_PATH)/ssl/d1_lib.c
-  $(OPENSSL_PATH)/ssl/d1_msg.c
-  $(OPENSSL_PATH)/ssl/d1_srtp.c
-  $(OPENSSL_PATH)/ssl/methods.c
-  $(OPENSSL_PATH)/ssl/pqueue.c
-  $(OPENSSL_PATH)/ssl/s3_enc.c
-  $(OPENSSL_PATH)/ssl/s3_lib.c
-  $(OPENSSL_PATH)/ssl/s3_msg.c
-  $(OPENSSL_PATH)/ssl/ssl_asn1.c
-  $(OPENSSL_PATH)/ssl/ssl_cert.c
-  $(OPENSSL_PATH)/ssl/ssl_ciph.c
-  $(OPENSSL_PATH)/ssl/ssl_conf.c
-  $(OPENSSL_PATH)/ssl/ssl_err.c
-  $(OPENSSL_PATH)/ssl/ssl_err_legacy.c
-  $(OPENSSL_PATH)/ssl/ssl_init.c
-  $(OPENSSL_PATH)/ssl/ssl_lib.c
-  $(OPENSSL_PATH)/ssl/ssl_mcnf.c
-  $(OPENSSL_PATH)/ssl/ssl_rsa.c
-  $(OPENSSL_PATH)/ssl/ssl_rsa_legacy.c
-  $(OPENSSL_PATH)/ssl/ssl_sess.c
-  $(OPENSSL_PATH)/ssl/ssl_stat.c
-  $(OPENSSL_PATH)/ssl/ssl_txt.c
-  $(OPENSSL_PATH)/ssl/ssl_utst.c
-  $(OPENSSL_PATH)/ssl/t1_enc.c
-  $(OPENSSL_PATH)/ssl/t1_lib.c
-  $(OPENSSL_PATH)/ssl/t1_trce.c
-  $(OPENSSL_PATH)/ssl/tls13_enc.c
-  $(OPENSSL_PATH)/ssl/tls_depr.c
-  $(OPENSSL_PATH)/ssl/tls_srp.c
-  $(OPENSSL_PATH)/ssl/record/dtls1_bitmap.c
-  $(OPENSSL_PATH)/ssl/record/rec_layer_d1.c
-  $(OPENSSL_PATH)/ssl/record/rec_layer_s3.c
-  $(OPENSSL_PATH)/ssl/record/ssl3_buffer.c
-  $(OPENSSL_PATH)/ssl/record/ssl3_record.c
-  $(OPENSSL_PATH)/ssl/record/ssl3_record_tls13.c
-  $(OPENSSL_PATH)/ssl/statem/extensions.c
-  $(OPENSSL_PATH)/ssl/statem/extensions_clnt.c
-  $(OPENSSL_PATH)/ssl/statem/extensions_cust.c
-  $(OPENSSL_PATH)/ssl/statem/statem.c
-  $(OPENSSL_PATH)/ssl/statem/statem_clnt.c
-  $(OPENSSL_PATH)/ssl/statem/statem_dtls.c
-  $(OPENSSL_PATH)/ssl/statem/statem_lib.c
   $(OPENSSL_GEN_PATH)/IA32-MSFT/crypto/aes/aes-586.nasm | MSFT
   $(OPENSSL_GEN_PATH)/IA32-MSFT/crypto/aes/aesni-x86.nasm | MSFT
   $(OPENSSL_GEN_PATH)/IA32-MSFT/crypto/aes/vpaes-x86.nasm | MSFT
@@ -873,20 +749,6 @@
   $(OPENSSL_PATH)/crypto/conf/conf_mod.c
   $(OPENSSL_PATH)/crypto/conf/conf_sap.c
   $(OPENSSL_PATH)/crypto/conf/conf_ssl.c
-  $(OPENSSL_PATH)/crypto/dh/dh_ameth.c
-  $(OPENSSL_PATH)/crypto/dh/dh_asn1.c
-  $(OPENSSL_PATH)/crypto/dh/dh_backend.c
-  $(OPENSSL_PATH)/crypto/dh/dh_check.c
-  $(OPENSSL_PATH)/crypto/dh/dh_err.c
-  $(OPENSSL_PATH)/crypto/dh/dh_gen.c
-  $(OPENSSL_PATH)/crypto/dh/dh_group_params.c
-  $(OPENSSL_PATH)/crypto/dh/dh_kdf.c
-  $(OPENSSL_PATH)/crypto/dh/dh_key.c
-  $(OPENSSL_PATH)/crypto/dh/dh_lib.c
-  $(OPENSSL_PATH)/crypto/dh/dh_meth.c
-  $(OPENSSL_PATH)/crypto/dh/dh_pmeth.c
-  $(OPENSSL_PATH)/crypto/dh/dh_prn.c
-  $(OPENSSL_PATH)/crypto/dh/dh_rfc5114.c
   $(OPENSSL_PATH)/crypto/dso/dso_dl.c
   $(OPENSSL_PATH)/crypto/dso/dso_dlfcn.c
   $(OPENSSL_PATH)/crypto/dso/dso_err.c
@@ -894,43 +756,6 @@
   $(OPENSSL_PATH)/crypto/dso/dso_openssl.c
   $(OPENSSL_PATH)/crypto/dso/dso_vms.c
   $(OPENSSL_PATH)/crypto/dso/dso_win32.c
-  $(OPENSSL_PATH)/crypto/ec/curve448/arch_32/f_impl32.c
-  $(OPENSSL_PATH)/crypto/ec/curve448/arch_64/f_impl64.c
-  $(OPENSSL_PATH)/crypto/ec/curve448/curve448.c
-  $(OPENSSL_PATH)/crypto/ec/curve448/curve448_tables.c
-  $(OPENSSL_PATH)/crypto/ec/curve448/eddsa.c
-  $(OPENSSL_PATH)/crypto/ec/curve448/f_generic.c
-  $(OPENSSL_PATH)/crypto/ec/curve448/scalar.c
-  $(OPENSSL_PATH)/crypto/ec/curve25519.c
-  $(OPENSSL_PATH)/crypto/ec/ec2_oct.c
-  $(OPENSSL_PATH)/crypto/ec/ec2_smpl.c
-  $(OPENSSL_PATH)/crypto/ec/ec_ameth.c
-  $(OPENSSL_PATH)/crypto/ec/ec_asn1.c
-  $(OPENSSL_PATH)/crypto/ec/ec_backend.c
-  $(OPENSSL_PATH)/crypto/ec/ec_check.c
-  $(OPENSSL_PATH)/crypto/ec/ec_curve.c
-  $(OPENSSL_PATH)/crypto/ec/ec_cvt.c
-  $(OPENSSL_PATH)/crypto/ec/ec_deprecated.c
-  $(OPENSSL_PATH)/crypto/ec/ec_err.c
-  $(OPENSSL_PATH)/crypto/ec/ec_key.c
-  $(OPENSSL_PATH)/crypto/ec/ec_kmeth.c
-  $(OPENSSL_PATH)/crypto/ec/ec_lib.c
-  $(OPENSSL_PATH)/crypto/ec/ec_mult.c
-  $(OPENSSL_PATH)/crypto/ec/ec_oct.c
-  $(OPENSSL_PATH)/crypto/ec/ec_pmeth.c
-  $(OPENSSL_PATH)/crypto/ec/ec_print.c
-  $(OPENSSL_PATH)/crypto/ec/ecdh_kdf.c
-  $(OPENSSL_PATH)/crypto/ec/ecdh_ossl.c
-  $(OPENSSL_PATH)/crypto/ec/ecdsa_ossl.c
-  $(OPENSSL_PATH)/crypto/ec/ecdsa_sign.c
-  $(OPENSSL_PATH)/crypto/ec/ecdsa_vrf.c
-  $(OPENSSL_PATH)/crypto/ec/eck_prn.c
-  $(OPENSSL_PATH)/crypto/ec/ecp_mont.c
-  $(OPENSSL_PATH)/crypto/ec/ecp_nist.c
-  $(OPENSSL_PATH)/crypto/ec/ecp_oct.c
-  $(OPENSSL_PATH)/crypto/ec/ecp_smpl.c
-  $(OPENSSL_PATH)/crypto/ec/ecx_backend.c
-  $(OPENSSL_PATH)/crypto/ec/ecx_key.c
   $(OPENSSL_PATH)/crypto/err/err.c
   $(OPENSSL_PATH)/crypto/err/err_all.c
   $(OPENSSL_PATH)/crypto/err/err_all_legacy.c
@@ -950,7 +775,7 @@
   $(OPENSSL_PATH)/crypto/evp/ctrl_params_translate.c
   $(OPENSSL_PATH)/crypto/evp/dh_ctrl.c
   $(OPENSSL_PATH)/crypto/evp/dh_support.c
-  $(OPENSSL_PATH)/crypto/evp/digest.c
+  OpensslStub/crypto/evp/digest.c
   $(OPENSSL_PATH)/crypto/evp/dsa_ctrl.c
   $(OPENSSL_PATH)/crypto/evp/e_aes.c
   $(OPENSSL_PATH)/crypto/evp/e_aes_cbc_hmac_sha1.c
@@ -1087,17 +912,6 @@
   $(OPENSSL_PATH)/crypto/objects/obj_err.c
   $(OPENSSL_PATH)/crypto/objects/obj_lib.c
   $(OPENSSL_PATH)/crypto/objects/obj_xref.c
-  $(OPENSSL_PATH)/crypto/pem/pem_all.c
-  $(OPENSSL_PATH)/crypto/pem/pem_err.c
-  $(OPENSSL_PATH)/crypto/pem/pem_info.c
-  $(OPENSSL_PATH)/crypto/pem/pem_lib.c
-  $(OPENSSL_PATH)/crypto/pem/pem_oth.c
-  $(OPENSSL_PATH)/crypto/pem/pem_pk8.c
-  $(OPENSSL_PATH)/crypto/pem/pem_pkey.c
-  $(OPENSSL_PATH)/crypto/pem/pem_sign.c
-  $(OPENSSL_PATH)/crypto/pem/pem_x509.c
-  $(OPENSSL_PATH)/crypto/pem/pem_xaux.c
-  $(OPENSSL_PATH)/crypto/pem/pvkfmt.c
   $(OPENSSL_PATH)/crypto/pkcs7/bio_pk7.c
   $(OPENSSL_PATH)/crypto/pkcs7/pk7_asn1.c
   $(OPENSSL_PATH)/crypto/pkcs7/pk7_attr.c
@@ -1264,9 +1078,6 @@
   $(OPENSSL_PATH)/providers/implementations/digests/sha2_prov.c
   $(OPENSSL_PATH)/providers/implementations/digests/sha3_prov.c
   $(OPENSSL_PATH)/providers/implementations/digests/sm3_prov.c
-  $(OPENSSL_PATH)/providers/implementations/exchange/dh_exch.c
-  $(OPENSSL_PATH)/providers/implementations/exchange/ecdh_exch.c
-  $(OPENSSL_PATH)/providers/implementations/exchange/ecx_exch.c
   $(OPENSSL_PATH)/providers/implementations/exchange/kdf_exch.c
   $(OPENSSL_PATH)/providers/implementations/kdfs/hkdf.c
   $(OPENSSL_PATH)/providers/implementations/kdfs/kbkdf.c
@@ -1280,9 +1091,6 @@
   $(OPENSSL_PATH)/providers/implementations/kdfs/tls1_prf.c
   $(OPENSSL_PATH)/providers/implementations/kdfs/x942kdf.c
   $(OPENSSL_PATH)/providers/implementations/kem/rsa_kem.c
-  $(OPENSSL_PATH)/providers/implementations/keymgmt/dh_kmgmt.c
-  $(OPENSSL_PATH)/providers/implementations/keymgmt/ec_kmgmt.c
-  $(OPENSSL_PATH)/providers/implementations/keymgmt/ecx_kmgmt.c
   $(OPENSSL_PATH)/providers/implementations/keymgmt/kdf_legacy_kmgmt.c
   $(OPENSSL_PATH)/providers/implementations/keymgmt/mac_legacy_kmgmt.c
   $(OPENSSL_PATH)/providers/implementations/keymgmt/rsa_kmgmt.c
@@ -1300,14 +1108,9 @@
   $(OPENSSL_PATH)/providers/implementations/rands/seeding/rand_tsc.c
   $(OPENSSL_PATH)/providers/implementations/rands/seeding/rand_unix.c
   $(OPENSSL_PATH)/providers/implementations/rands/seeding/rand_win.c
-  $(OPENSSL_PATH)/providers/implementations/signature/ecdsa_sig.c
-  $(OPENSSL_PATH)/providers/implementations/signature/eddsa_sig.c
   $(OPENSSL_PATH)/providers/implementations/signature/mac_legacy_sig.c
   $(OPENSSL_PATH)/providers/implementations/signature/rsa_sig.c
   $(OPENSSL_PATH)/ssl/s3_cbc.c
-  $(OPENSSL_PATH)/providers/common/der/der_ec_key.c
-  $(OPENSSL_PATH)/providers/common/der/der_ec_sig.c
-  $(OPENSSL_PATH)/providers/common/der/der_ecx_key.c
   $(OPENSSL_PATH)/providers/common/der/der_rsa_key.c
   $(OPENSSL_PATH)/providers/common/provider_ctx.c
   $(OPENSSL_PATH)/providers/common/provider_err.c
@@ -1321,53 +1124,8 @@
   $(OPENSSL_PATH)/providers/implementations/digests/digestcommon.c
   $(OPENSSL_PATH)/ssl/record/tls_pad.c
   $(OPENSSL_GEN_PATH)/providers/common/der/der_digests_gen.c
-  $(OPENSSL_GEN_PATH)/providers/common/der/der_ec_gen.c
-  $(OPENSSL_GEN_PATH)/providers/common/der/der_ecx_gen.c
   $(OPENSSL_GEN_PATH)/providers/common/der/der_rsa_gen.c
   $(OPENSSL_GEN_PATH)/providers/common/der/der_wrap_gen.c
-  $(OPENSSL_PATH)/ssl/bio_ssl.c
-  $(OPENSSL_PATH)/ssl/d1_lib.c
-  $(OPENSSL_PATH)/ssl/d1_msg.c
-  $(OPENSSL_PATH)/ssl/d1_srtp.c
-  $(OPENSSL_PATH)/ssl/methods.c
-  $(OPENSSL_PATH)/ssl/pqueue.c
-  $(OPENSSL_PATH)/ssl/s3_enc.c
-  $(OPENSSL_PATH)/ssl/s3_lib.c
-  $(OPENSSL_PATH)/ssl/s3_msg.c
-  $(OPENSSL_PATH)/ssl/ssl_asn1.c
-  $(OPENSSL_PATH)/ssl/ssl_cert.c
-  $(OPENSSL_PATH)/ssl/ssl_ciph.c
-  $(OPENSSL_PATH)/ssl/ssl_conf.c
-  $(OPENSSL_PATH)/ssl/ssl_err.c
-  $(OPENSSL_PATH)/ssl/ssl_err_legacy.c
-  $(OPENSSL_PATH)/ssl/ssl_init.c
-  $(OPENSSL_PATH)/ssl/ssl_lib.c
-  $(OPENSSL_PATH)/ssl/ssl_mcnf.c
-  $(OPENSSL_PATH)/ssl/ssl_rsa.c
-  $(OPENSSL_PATH)/ssl/ssl_rsa_legacy.c
-  $(OPENSSL_PATH)/ssl/ssl_sess.c
-  $(OPENSSL_PATH)/ssl/ssl_stat.c
-  $(OPENSSL_PATH)/ssl/ssl_txt.c
-  $(OPENSSL_PATH)/ssl/ssl_utst.c
-  $(OPENSSL_PATH)/ssl/t1_enc.c
-  $(OPENSSL_PATH)/ssl/t1_lib.c
-  $(OPENSSL_PATH)/ssl/t1_trce.c
-  $(OPENSSL_PATH)/ssl/tls13_enc.c
-  $(OPENSSL_PATH)/ssl/tls_depr.c
-  $(OPENSSL_PATH)/ssl/tls_srp.c
-  $(OPENSSL_PATH)/ssl/record/dtls1_bitmap.c
-  $(OPENSSL_PATH)/ssl/record/rec_layer_d1.c
-  $(OPENSSL_PATH)/ssl/record/rec_layer_s3.c
-  $(OPENSSL_PATH)/ssl/record/ssl3_buffer.c
-  $(OPENSSL_PATH)/ssl/record/ssl3_record.c
-  $(OPENSSL_PATH)/ssl/record/ssl3_record_tls13.c
-  $(OPENSSL_PATH)/ssl/statem/extensions.c
-  $(OPENSSL_PATH)/ssl/statem/extensions_clnt.c
-  $(OPENSSL_PATH)/ssl/statem/extensions_cust.c
-  $(OPENSSL_PATH)/ssl/statem/statem.c
-  $(OPENSSL_PATH)/ssl/statem/statem_clnt.c
-  $(OPENSSL_PATH)/ssl/statem/statem_dtls.c
-  $(OPENSSL_PATH)/ssl/statem/statem_lib.c
   $(OPENSSL_GEN_PATH)/X64-MSFT/crypto/aes/aes-x86_64.nasm | MSFT
   $(OPENSSL_GEN_PATH)/X64-MSFT/crypto/aes/aesni-mb-x86_64.nasm | MSFT
   $(OPENSSL_GEN_PATH)/X64-MSFT/crypto/aes/aesni-sha1-x86_64.nasm | MSFT
