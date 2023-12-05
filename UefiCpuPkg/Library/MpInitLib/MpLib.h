@@ -270,7 +270,6 @@ struct _CPU_MP_DATA {
   UINT64                           TotalTime;
   EFI_EVENT                        WaitEvent;
   UINTN                            **FailedCpuList;
-  BOOLEAN                          EnableExecuteDisableForSwitchContext;
 
   AP_INIT_STATE                    InitFlag;
   BOOLEAN                          SwitchBspFlag;
