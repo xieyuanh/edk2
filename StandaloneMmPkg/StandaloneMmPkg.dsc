@@ -59,7 +59,7 @@
   StandaloneMmCoreEntryPoint|StandaloneMmPkg/Library/StandaloneMmCoreEntryPoint/StandaloneMmCoreEntryPoint.inf
   StandaloneMmDriverEntryPoint|MdePkg/Library/StandaloneMmDriverEntryPoint/StandaloneMmDriverEntryPoint.inf
   VariableMmDependency|StandaloneMmPkg/Library/VariableMmDependency/VariableMmDependency.inf
-  StandaloneMmPkg/Library/SmmLockBoxMmDependency/SmmLockBoxMmDependency.inf
+  VarCheckHiiLibMmDependency|StandaloneMmPkg/Library/SmmLockBoxMmDependency/SmmLockBoxMmDependency.inf
 
 [LibraryClasses.common.PEIM]
   HobLib|MdePkg/Library/PeiHobLib/PeiHobLib.inf
@@ -130,6 +130,7 @@
   StandaloneMmPkg/Library/StandaloneMmMemoryAllocationLib/StandaloneMmMemoryAllocationLib.inf
   StandaloneMmPkg/Library/VariableMmDependency/VariableMmDependency.inf
   StandaloneMmPkg/Library/SmmLockBoxMmDependency/SmmLockBoxMmDependency.inf
+  MdeModulePkg/Library/VarCheckHiiLib/VarCheckHiiLibMmDependency.inf
 
 [Components.AARCH64, Components.ARM]
   StandaloneMmPkg/Drivers/StandaloneMmCpu/StandaloneMmCpu.inf

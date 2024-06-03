@@ -124,9 +124,9 @@ VarCheckHiiLibMmDependencyConstructor (
 {
   EFI_STATUS  Status;
   EFI_EVENT   Event;
-
+  DEBUG ((DEBUG_INFO, "VarCheckHiiLibMmDependencyConstructor Starts \n"));
   Status = gBS->CreateEventEx (EVT_NOTIFY_SIGNAL, TPL_NOTIFY, SmmEndOfDxeNotify, NULL, &gEfiEndOfDxeEventGroupGuid, &Event);
   ASSERT_EFI_ERROR (Status);
-
+  DEBUG ((DEBUG_INFO, "VarCheckHiiLibMmDependencyConstructor Ends \n"));
   return Status;
 }
