@@ -12,6 +12,8 @@ VAR_CHECK_HII_VARIABLE_HEADER  *mVarCheckHiiBin    = NULL;
 UINTN                          mVarCheckHiiBinSize = 0;
 LIST_ENTRY                     mVarCheckHiiList    = INITIALIZE_LIST_HEAD_VARIABLE (mVarCheckHiiList);
 
+EFI_GUID  gVarCheckReceiveHiiBinHandlerGuid = VAR_CHECK_RECEIVE_HII_BIN_HANDLER_GUID;
+
 #define VAR_CHECK_HII_VARIABLE_NODE_SIGNATURE  SIGNATURE_32 ('V', 'C', 'H', 'V')
 
 typedef struct {
