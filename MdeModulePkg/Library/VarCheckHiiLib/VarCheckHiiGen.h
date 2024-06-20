@@ -10,7 +10,8 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #define _VAR_CHECK_HII_GEN_H_
 
 #include "VarCheckHii.h"
-
+extern VAR_CHECK_HII_VARIABLE_HEADER  *mVarCheckHiiBin;
+extern UINTN                          mVarCheckHiiBinSize;
 /**
   Dump Hii Package.
 

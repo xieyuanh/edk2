@@ -17,7 +17,8 @@
 #include <Guid/EventGroup.h>
 
 extern EFI_GUID  gEfiVariableCheckHiiCommunicationGuid;
-
+extern VAR_CHECK_HII_VARIABLE_HEADER  *mVarCheckHiiBin;
+extern UINTN                          mVarCheckHiiBinSize;
 /**
   Sends HII variable checking data to SMM at the end of DXE phase.
   This function is triggered by the End of DXE. It locates a memory
@@ -28,7 +29,7 @@ extern EFI_GUID  gEfiVariableCheckHiiCommunicationGuid;
   @param[in] Context    The pointer to the notification function's context, which
                         is implementation-dependent.
 **/
-VOID
+EFI_STATUS
 EFIAPI
 SmmEndOfDxeNotify (
   IN EFI_EVENT  Event,
@@ -45,7 +46,7 @@ SmmEndOfDxeNotify (
   VAR_CHECK_HII_VARIABLE_HEADER            *VarCheckHiiVariable;
 
   DEBUG ((DEBUG_INFO, "SmmEndOfDxeNotify Start\n"));
-  VarCheckHiiGen (&mVarCheckHiiBin, &mVarCheckHiiBinSize);
+  VarCheckHiiGen ();
   if ((mVarCheckHiiBinSize == 0) || (mVarCheckHiiBin == NULL)) {
     return EFI_DEVICE_ERROR;
   }

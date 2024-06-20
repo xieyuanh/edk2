@@ -258,8 +258,6 @@ VarCheckHiiQuestion (
   return TRUE;
 }
 
-VAR_CHECK_HII_VARIABLE_HEADER  *mVarCheckHiiBin    = NULL;
-UINTN                          mVarCheckHiiBinSize = 0;
 
 /**
   SetVariable check handler HII.
